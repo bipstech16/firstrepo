@@ -1,5 +1,3 @@
-
-
 name: 'Terraform'
 
 on:
@@ -32,9 +30,17 @@ jobs:
     - name: Terraform Format
       run: terraform fmt -check
 
+    - name: Terraform Validate
+      run: terraform validate
+
     - name: Terraform Plan
       run: terraform plan -input=false
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+
+    - name: Debug Output
+      if: failure()
+      run: |
+        echo "Terraform failed. Check previous step logs for error details."
