@@ -1,10 +1,7 @@
-name: 'Terraform CI/CD'
+name: 'Terraform Infra Deployment'
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:  # manual trigger
 
 permissions:
   contents: read
@@ -15,19 +12,15 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     environment: production
 
-    defaults:
-      run:
-        shell: bash
-        working-directory: /actions-runner/_work/firstrepo/firstrepo
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.6.6
 
       - name: Terraform Init
         run: terraform init
@@ -38,6 +31,5 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
-      - name: Terraform Apply (on push to main only)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
