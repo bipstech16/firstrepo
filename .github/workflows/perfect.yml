@@ -1,21 +1,41 @@
-name: Terraform Azure
-on: [push]
+name: 'Terraform Infra Deployment'
+
+# 'on:' block removed to disable all triggers
+# To re-enable, uncomment one of the options below:
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#   workflow_dispatch:  # manual trigger
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: [self-hosted, Linux, X64] 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  terraform:
+    name: 'Terraform'
+    runs-on: [self-hosted, Linux, X64]
+    environment: production
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Validate
+        run: terraform validate
+
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
