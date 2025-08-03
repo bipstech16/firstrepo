@@ -1,0 +1,23 @@
+name: Test Self-Hosted Runner
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: [self-hosted, master]   # Runner label is 'master'
+    
+    steps:
+      - name: Say Hello
+        run: echo "✅ Self-hosted runner is working!"
+
+      - name: Show runner info
+        run: |
+          echo "Runner Name: $RUNNER_NAME"
+          echo "Runner OS: $RUNNER_OS"
+          echo "Runner Arch: $RUNNER_ARCH"
+
+      - name: List current directory
+        run: ls -la
