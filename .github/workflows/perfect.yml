@@ -27,14 +27,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Terraform
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          wget https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
-          unzip terraform_1.6.6_linux_amd64.zip
-          sudo mv terraform /usr/local/bin/
-          terraform -version
 
       - name: Terraform Init
         run: terraform init
