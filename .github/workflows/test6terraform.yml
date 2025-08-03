@@ -1,0 +1,38 @@
+name: Terraform + Node.js (manual install)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: Setup Tools
+    runs-on: [self-hosted, Linux, X64] 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install unzip (required for Terraform)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip curl
+
+      - name: Install Terraform manually
+        run: |
+          wget https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
+          unzip terraform_1.6.6_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+          terraform -version
+
+      - name: Install Node.js v20 manually
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node -v
+          npm -v
+
+      - name: Run your Node or Terraform script
+        run: |
+          echo "Node.js and Terraform are ready!"
+          # Example command
+          terraform init
