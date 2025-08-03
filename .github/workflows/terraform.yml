@@ -2,16 +2,13 @@ name: 'Terraform'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: none
   pull_request:
-
-permissions:
-  contents: read
 
 jobs:
   terraform:
     name: 'Terraform'
-    runs-on: [self-hosted, master]   # ✅ Only here, not above
+    runs-on: [self-hosted, master]
     environment: production
 
     defaults:
@@ -19,7 +16,7 @@ jobs:
         shell: bash
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Terraform
@@ -31,4 +28,14 @@ jobs:
         run: terraform init
 
       - name: Terraform Format
-        run: terraf
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
