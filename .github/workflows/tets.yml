@@ -2,13 +2,13 @@ name: 'Terraform'
 
 on:
   push:
-    branches: 
+    branches: none
   pull_request:
 
 jobs:
   terraform:
     name: 'Terraform'
-    runs-on: [self-hosted, master]
+    runs-on: self-hosted
     environment: production
 
     defaults:
