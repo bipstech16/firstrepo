@@ -17,6 +17,6 @@ provider "azurerm" {
 
 
 resource "azurerm_resource_group" "pagl" {
-  name     = "testing"
+  name     = "bipstech"
   location = "East US"
 }
