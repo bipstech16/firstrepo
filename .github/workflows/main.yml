@@ -2,17 +2,19 @@ name: 'Terraform'
 
 on:
   push:
-    branches: main
+    branches: [main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   terraform:
-    name: 'Terraform'
-    runs-on: [self-hosted, Linux, X64] 
-    environment: production
+    name: 'Terraform CI/CD'
+    runs-on: [self-hosted, Linux, X64]
+    environment: production  # This enables manual approval in GitHub UI
 
     defaults:
       run:
@@ -22,6 +24,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6  # Or your installed version
 
       - name: Terraform Init
         run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply (only on push to main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan
